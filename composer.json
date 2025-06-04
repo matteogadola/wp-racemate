@@ -1,0 +1,19 @@
+{
+    "name": "magda/racemate",
+    "type": "library",
+    "require": {
+        "stripe/stripe-php": "^17.2",
+        "davidepastore/codice-fiscale": "^0.9.1",
+        "mailjet/mailjet-apiv3-php": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Magda\\Racemate\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matteo Gadola"
+        }
+    ]
+}
