@@ -116,7 +116,7 @@ class RmiapAdminRaces {
               <?php endforeach; ?>
 
             <div class="modal fade" id="race-details-modal" tabindex="-1" aria-labelledby="race-details-modal-label" aria-hidden="true">
-              <div class="modal-dialog">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title fs-5" id="race-details-modal-label">Nuova gara</h5>
@@ -150,6 +150,14 @@ class RmiapAdminRaces {
                         <div class="form-floating">
                           <input type="text" class="form-control" id="account_id" name="account_id" placeholder="Account">
                           <label for="account_id">Account</label>
+                        </div>
+                        <div class="form-floating">
+                          <input type="text" class="form-control" id="start_sale_date" name="start_sale_date" placeholder="Apertura iscrizioni">
+                          <label for="start_sale_date">Apertura iscrizioni</label>
+                        </div>
+                        <div class="form-floating">
+                          <input type="text" class="form-control" id="end_sale_date" name="end_sale_date" placeholder="Chiusura iscrizioni">
+                          <label for="end_sale_date">Chiusura iscrizioni</label>
                         </div>
                         <!--select class="form-select" aria-label="Account" id="account_id" name="account_id">
                           <option value="1" selected>Team Valtellina</option>

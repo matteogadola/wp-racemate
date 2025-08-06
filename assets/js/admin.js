@@ -160,6 +160,8 @@ jQuery(document).ready(function($) {
             $("input[name='price']").val(race.price);
             $("input[name='status']").val(race.status);
             $("input[name='account_id']").val(race.account_id);
+            $("input[name='start_sale_date']").val(race.start_sale_date);
+            $("input[name='end_sale_date']").val(race.end_sale_date);
           } else {
             event.preventDefault();
             //modalBody.html('<p>' + (response.data.message || 'Errore nel caricamento dei dettagli.') + '</p>');
@@ -180,6 +182,8 @@ jQuery(document).ready(function($) {
       $("input[name='price']").val('');
       $("input[name='status']").val('');
       $("input[name='account_id']").val('');
+      $("input[name='start_sale_date']").val('');
+      $("input[name='end_sale_date']").val('');
     }
   })
 
@@ -201,7 +205,7 @@ jQuery(document).ready(function($) {
           console.log(response.data)
           // Chiudo modale e aggiorno la pagina
           $(`#race-details-modal button[data-bs-dismiss="modal"]`).trigger('click');
-          //window.location.reload();
+          window.location.reload();
         } else {
           //modalBody.html('<p>' + (response.data.message || 'Errore nel caricamento dei dettagli.') + '</p>');
         }

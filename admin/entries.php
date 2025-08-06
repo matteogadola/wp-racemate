@@ -110,7 +110,7 @@ class RmiapAdminEntries {
 
       <!-- Modal (add) -->
       <div class="modal fade" id="entry-add-modal" tabindex="-1" aria-labelledby="entry-add-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title fs-5" id="entry-add-modal-label">Nuova iscrizione</h5>

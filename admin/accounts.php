@@ -49,7 +49,7 @@ class RmiapAdminAccounts {
 
                   <!-- Modal -->
                   <div class="modal fade" id="account-<?php echo esc_attr( $account->id ); ?>-details-modal" tabindex="-1" aria-labelledby="account-<?php echo esc_attr( $account->id ); ?>-details-modal-label" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title fs-5" id="account-<?php echo esc_attr( $account->id ); ?>-details-modal-label">Modifica account</h5>

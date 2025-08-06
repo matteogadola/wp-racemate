@@ -79,7 +79,7 @@ class RmiapDatabase {
   }
 
   public function update_race($id, $params) {
-    $updated = $this->wpdb->update($this->table_races, $params, [ 'id' => $id ]);
+    $updated = $this->wpdb->update($this->table_races, sanullize($params), ['id' => $id]);
 
     if ($updated === false) {
       throw new Exception('Errore in update');
@@ -171,4 +171,16 @@ class RmiapDatabase {
     }
     return $updated;
   }
+}
+
+function sanullize($data) {
+  return array_reduce(
+    array_keys($data),
+    function ($acc, $key) use ($data) {
+        $value = empty($data[$key]) ? null : $data[$key];
+        $acc[$key] = $value;
+        return $acc;
+    },
+    []
+  );
 }
