@@ -49,12 +49,11 @@ class RmiapForm {
   private function render_form($wp, $atts, $params) {
     $race = $this->db->get_race($atts['race']);
     $entries = $atts['show-entries'] === 'false' ? array() : $this->db->get_entries_view($atts['race']);
-
     ob_start();
     ?>
       <div>
         <button type="button" class="btn btn-link <?php echo count($entries) > 0 ? '' : 'd-none'; ?>" data-bs-toggle="modal" data-bs-target="#race-<?php echo esc_attr( $race->id ); ?>-entries-modal" data-race-id="<?php echo esc_attr( $race->id ); ?>">
-          Vedi elenco iscrittiadf
+          Vedi elenco iscritti
         </button>
         <?php
           if (isset($race->end_sale_date)) {
