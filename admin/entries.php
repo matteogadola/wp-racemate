@@ -221,8 +221,8 @@ class RmiapAdminEntries {
 
       echo $filename;
       exit;*/
-
-    $entries = $this->db->get_entries_view();
+	$race_id = isset($_GET['race_id']) ? $_GET['race_id'] : null;
+    $entries = $this->db->get_entries_view($race_id);
 
     $delimiter = ";";
     $columns = array('id', 'first_name', 'last_name', 'birth_year', 'gender', 'club', 'tin', 'email', 'phone_number', 'payment_method', 'payment_status');
