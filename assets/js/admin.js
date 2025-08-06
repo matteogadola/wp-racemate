@@ -15,7 +15,7 @@ jQuery(document).ready(function($) {
       success: function(response) {
         if (response.success && response.data) {
           // Chiudo modale e aggiorno la pagina
-          $(`#account-${id}-details-modal button[data-bs-dismiss="modal"]`).click();
+          $(`#account-${id}-details-modal button[data-bs-dismiss="modal"]`).trigger('click');
           window.location.reload();
         } else {
           //modalBody.html('<p>' + (response.data.message || 'Errore nel caricamento dei dettagli.') + '</p>');
@@ -171,6 +171,15 @@ jQuery(document).ready(function($) {
             //modalBody.html('<p>Errore nella richiesta AJAX. Controlla la console.</p>');
         }
       });
+    } else {
+      $('#race-details-modal-label').text('Nuova gara')
+      $("input[name='id']").val('');
+      $("input[name='name']").val('');
+      $("input[name='slug']").val('');
+      $("input[name='date']").val('');
+      $("input[name='price']").val('');
+      $("input[name='status']").val('');
+      $("input[name='account_id']").val('');
     }
   })
 
@@ -204,32 +213,5 @@ jQuery(document).ready(function($) {
     });
   });
 
-
-  /*$('#race-details-modal').on('click' ,function() {
-    const form = $(`#entry-add-modal-form`);
-
-    $.ajax({
-      url: rmiap_admin_params.ajax_url,
-      type: 'POST',
-      data: {
-        action: 'rmiap_entry_confirm',
-        form: form.serialize(),
-        nonce: rmiap_admin_params.nonce
-      },
-      success: function(response) {
-        if (response.success && response.data) {
-          // Chiudo modale e aggiorno la pagina
-          $('#entry-add-close-button').click();
-          window.location.reload();
-        } else {
-          //modalBody.html('<p>' + (response.data.message || 'Errore nel caricamento dei dettagli.') + '</p>');
-        }
-      },
-      error: function(xhr, status, error) {
-          console.error("AJAX Error:", status, error, xhr.responseText);
-          //modalBody.html('<p>Errore nella richiesta AJAX. Controlla la console.</p>');
-      }
-    });
-  });*/
 
 });
