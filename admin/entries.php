@@ -18,7 +18,8 @@ class RmiapAdminEntries {
   }
 
   public function render_page() {
-    $entries = $this->db->get_entries_view(2);
+    $race_id = isset($_GET['race_id']) ? $_GET['race_id'] : 2;
+    $entries = $this->db->get_entries_view($race_id);
     ?>
 
     <div class="pt-3 pe-3">
@@ -37,8 +38,9 @@ class RmiapAdminEntries {
           <div class="filters-bar">
             <div class="form-floating">
               <select class="form-select" id="race_id_filter" disabled>
-                <option value="1">Vertical Montemezzo</option>
-                <option value="2" selected>Bivacco Rovedatti Vertical</option>
+                <option value="1" <?php echo $race_id == 1 ? 'selected' : ''; ?>>Vertical Montemezzo</option>
+                <option value="2" <?php echo $race_id == 2 ? 'selected' : ''; ?>>Bivacco Rovedatti Vertical</option>
+                <option value="3" <?php echo $race_id == 3 ? 'selected' : ''; ?>>Frasnedo Vertical</option>
               </select>
               <label for="race_id_filter">Gara</label>
             </div>
@@ -56,7 +58,7 @@ class RmiapAdminEntries {
             </div>
           </div>
           <div class="actions-bar">
-            <a href="<?php echo admin_url('admin-post.php'); ?>?action=export&race_id=2" class="btn btn-secondary" style="display: flex; align-items: center;">
+            <a href="<?php echo admin_url('admin-post.php'); ?>?action=export&race_id=<?php echo esc_attr($race_id); ?>" class="btn btn-secondary" style="display: flex; align-items: center;">
               <span class="dashicons dashicons-download"></span>
             </a>
           </div>
