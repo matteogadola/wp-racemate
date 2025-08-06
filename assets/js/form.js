@@ -40,8 +40,11 @@ jQuery(document).ready(function($) {
       error: function(xhr, status, error) {
         try {
           const { data } = JSON.parse(xhr.responseText);
+          if (!data) {
+            throw new Error('malformed response');
+          }
+
           checkoutFailure.html(data.message).show();
-          //$('#racemate-form p.form-error').show();
         } catch(e) {
           console.error(e.message, xhr.responseText)
         }

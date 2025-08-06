@@ -1,6 +1,6 @@
 === Racemate ===
 Contributors: matteogadola, wordpressdotorg
-Stable tag: 0.8.0
+Stable tag: 0.9.1
 Tested up to: 6.8
 Requires at least: 6.7
 

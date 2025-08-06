@@ -38,7 +38,7 @@ class RmiapMail {
                 'Name' => $entry['first_name'] . ' ' . $entry['last_name'],
               ]
             ],
-            'TemplateID' => 7037767,
+            'TemplateID' => $entry['account_id'] == 2 ? 7037767 : 7132866,
             'TemplateLanguage' => true,
             'CustomID' => strval($entry['id']),
             'Subject' => "Conferma iscrizione",

@@ -21,7 +21,9 @@ class RmiapForm {
     //add_action('admin_post_checkout', array($this, 'checkout_callback'));
     //add_action('admin_post_nopriv_checkout', array($this, 'checkout_callback'));
     add_action('wp_ajax_rmiap_form_checkout', array($this, 'ajax_form_checkout'));
+    add_action('wp_ajax_nopriv_rmiap_form_checkout', array($this, 'ajax_form_checkout'));
     add_action('wp_ajax_rmiap_form_clubs', array($this, 'ajax_form_clubs'));
+    add_action('wp_ajax_nopriv_rmiap_form_clubs', array($this, 'ajax_form_clubs'));
   }
 
   public function form_shortcode_handler($atts, $content = null) {
@@ -29,110 +31,140 @@ class RmiapForm {
 
     $atts = shortcode_atts(
       array(
-        'race'      => null,
-        'race-id'      => null,
-        'id'        => '',                                  // ID HTML opzionale
-        'class'     => '',                                  // Classi CSS aggiuntive opzionali
-        'style'     => 'default'                            // Stile predefinito (es. 'default', 'primary', 'secondary')
+        'race'          => null,
+        //'race-id'       => null,
+        'show-entries'  => 'true',
+        'sale-closed'   => '',
+        'id'            => '',            // ID HTML opzionale
+        'class'         => '',            // Classi CSS aggiuntive opzionali
+        'style'         => 'default'      // Stile predefinito (es. 'default', 'primary', 'secondary')
       ),
       $atts,
       'racemate-form'
     );
 
-    /*if (isset($_GET['checkout'])) {
-      $status = $_GET['checkout'];
-
-      if ($status == 'success') {
-        echo 'Bella li...';
-
-      } else if (isset($_GET['error'])) {
-        $error = $_GET['error'];
-
-        echo $error;
-      }
-    }*/
-
     return $this->render_form($wp, $atts, $_GET);
   }
 
   private function render_form($wp, $atts, $params) {
-    /*$form = array();
-    if (isset($params['success'])) {
-      $values = base64_decode($params['success']);
-      parse_str($values, $form);
-      ob_start();
-      ?>
-      <div class="alert alert-success grid-full" role="alert">
-        <h4 class="h4 alert-heading">Iscrizione effettuata con successo!</h4>
-        <p>Conferma n. <?php echo $form['id']; ?>. A breve riceverai una mail di conferma.</p>
-        <hr>
-        <p class="mb-0"><strong>Clicca qui</strong> per tornare alla pagina di iscrizione</p>
-      </div>
-      <?php
-      return ob_get_clean();
-    } elseif (isset($params['reset'])) {
-      $values = base64_decode($params['reset']);
-      parse_str($values, $form);
-    }*/
-
     $race = $this->db->get_race($atts['race']);
+    $entries = $atts['show-entries'] === 'false' ? array() : $this->db->get_entries_view($atts['race']);
+
     ob_start();
     ?>
+      <div>
+        <button type="button" class="btn btn-link <?php echo count($entries) > 0 ? '' : 'd-none'; ?>" data-bs-toggle="modal" data-bs-target="#race-<?php echo esc_attr( $race->id ); ?>-entries-modal" data-race-id="<?php echo esc_attr( $race->id ); ?>">
+          Vedi elenco iscrittiadf
+        </button>
+        <?php
+          if (isset($race->end_sale_date)) {
+            $end_sale_date = new DateTime($race->end_sale_date);
+          } else {
+            $end_sale_date = (new DateTime($race->date))->sub(new DateInterval('PT46H'));
+          }
 
-      <form id="racemate-form" method="post" action="<?php echo esc_attr(admin_url('admin-post.php')); ?>">
-        <?php if (isset($params['success'])) { ?>
-          <div class="alert alert-success pt-2 pb-6" role="alert">
-            <h4 class="alert-heading h4 pt-4">Iscrizione effettuata con successo!</h4>
-            <p>A breve riceverai una mail di conferma.</p>
+          $today = new DateTime();
+          if ($today > $end_sale_date) {
+            echo "<p>". (!empty($atts['sale-closed']) ? $atts['sale-closed'] : "Iscrizioni online chiuse. Sarà possibile iscriversi alla partenza.") . "</p>";
+          } else {
+        ?>
+
+        <form id="racemate-form" method="post" action="<?php echo esc_attr(admin_url('admin-post.php')); ?>">
+          <?php if (isset($params['success'])) { ?>
+            <div class="alert alert-success pt-2 pb-6" role="alert">
+              <h4 class="alert-heading h4 pt-4">Iscrizione effettuata con successo!</h4>
+              <p>A breve riceverai una mail di conferma.</p>
+            </div>
+          <?php } ?>
+          <div class="grid pt-4">
+            <input type="hidden" name="action" value="checkout">
+            <input type="hidden" name="url" value="<?php echo esc_attr($wp->request); ?>">
+            <input type="hidden" name="race_id" value="<?php echo esc_attr($atts['race']); ?>">
+            <input type="hidden" name="race_price" value="<?php echo esc_attr($race->price); ?>">
+            <!-- First name -->
+            <div class="form-floating">
+              <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Nome">
+              <label for="first_name">Nome *</label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Cognome">
+              <label for="last_name">Cognome *</label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="tin" name="tin" placeholder="Codice Fiscale">
+              <label for="tin">Codice Fiscale *</label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" list="clubOptions" id="club" name="club" placeholder="Società">
+              <label for="club">Società</label>
+              <datalist id="clubOptions"></datalist>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+              <label for="email">Email *</label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Telefono">
+              <label for="phone_number">Telefono</label>
+            </div>
+            <div class="grid-full py-4">
+              <span>Metodo di Pagamento</span>
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="payment_method" id="stripe" value="stripe" checked>
+                <label class="form-check-label" for="stripe">Online</label>
+              </div>
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash">
+                <label class="form-check-label" for="cash">Contanti</label>
+              </div>
+            </div>
+            <div id="racemate-form-error" class="alert alert-danger grid-full" role="alert"></div>
+            <button type="button" name="checkout" class="btn btn-primary"></button>
           </div>
+        </form>
         <?php } ?>
-        <div class="grid pt-4">
-          <input type="hidden" name="action" value="checkout">
-          <input type="hidden" name="url" value="<?php echo esc_attr($wp->request); ?>">
-          <input type="hidden" name="race_id" value="<?php echo esc_attr($atts['race']); ?>">
-          <input type="hidden" name="race_price" value="<?php echo esc_attr($race->price); ?>">
-          <!-- First name -->
-          <div class="form-floating">
-            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Nome">
-            <label for="first_name">Nome *</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Cognome">
-            <label for="last_name">Cognome *</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" id="tin" name="tin" placeholder="Codice Fiscale">
-            <label for="tin">Codice Fiscale *</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" list="clubOptions" id="club" name="club" placeholder="Società">
-            <label for="club">Società</label>
-            <datalist id="clubOptions"></datalist>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" id="email" name="email" placeholder="Email">
-            <label for="email">Email *</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Telefono">
-            <label for="phone_number">Telefono</label>
-          </div>
-          <div class="grid-full py-4">
-            <span>Metodo di Pagamento</span>
-            <div class="form-check mt-2">
-              <input class="form-check-input" type="radio" name="payment_method" id="stripe" value="stripe" checked>
-              <label class="form-check-label" for="stripe">Online</label>
-            </div>
-            <div class="form-check mt-2">
-              <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash">
-              <label class="form-check-label" for="cash">Contanti</label>
-            </div>
-          </div>
-          <div id="racemate-form-error" class="alert alert-danger grid-full" role="alert"></div>
-          <button type="button" name="checkout" class="btn btn-primary"></button>
-        </div>
-      </form>
 
+        <!-- Modal -->
+        <div class="modal fade" id="race-<?php echo esc_attr( $race->id ); ?>-entries-modal" tabindex="-1" aria-labelledby="race-<?php echo esc_attr( $race->id ); ?>-entries-modal-label" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title fs-5" id="race-<?php echo esc_attr( $race->id ); ?>-entries-modal-label">Iscritti (<?php echo esc_attr(count($entries)); ?>)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Cognome</th>
+                      <th scope="col">Nome</th>
+                      <th scope="col">Anno</th>
+                      <th scope="col">Sesso</th>
+                      <th scope="col">Team</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($entries as $entry): ?>
+                    <tr>
+                      <td><?= $entry->last_name; ?></td>
+                      <td><?= $entry->first_name; ?></td>
+                      <td><?= $entry->birth_year; ?></td>
+                      <td><?= $entry->gender; ?></td>
+                      <td><?= $entry->club; ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+                
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     <?php
     return ob_get_clean();
   }
@@ -153,6 +185,13 @@ class RmiapForm {
     wp_enqueue_script(
       'rmiap-form-script',
       plugin_dir_url(__DIR__) . 'assets/js/form.js',
+      array('jquery'),
+      $this->version,
+    );
+
+    wp_enqueue_script(
+      'rmiap-form-script-bootstrap',
+      plugin_dir_url(__DIR__) . 'assets/js/bootstrap.min.js',
       array('jquery'),
       $this->version,
     );

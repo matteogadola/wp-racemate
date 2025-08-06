@@ -11,10 +11,16 @@
   }
 }
 
+.entries-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 25px;
+}
+
 .filters-bar {
   display: flex;
   gap: 1rem;
-  padding-bottom: 25px;
   /*max-height: 32px;*/
   & select, input {
     min-width: 192px;

@@ -12,10 +12,13 @@ class RmiapAdminEntries {
     // AJAX handler per caricare i dati della modale (opzionale, ma buon approccio)
     //add_action( 'wp_ajax_racemate_get_race_details_for_modal', array( $this, 'ajax_get_race_details_for_modal' ) );
     add_action('wp_ajax_rmiap_entry_confirm', array($this, 'ajax_rmiap_entry_confirm'));
+    //add_action('wp_ajax_rmiap_entries_export', array($this, 'ajax_rmiap_entries_export'));
+
+    add_action('admin_post_export', array($this, 'export'));
   }
 
   public function render_page() {
-    $entries = $this->db->get_entries_view();
+    $entries = $this->db->get_entries_view(2);
     ?>
 
     <div class="pt-3 pe-3">
@@ -30,24 +33,32 @@ class RmiapAdminEntries {
       <p><?php /*esc_html_e( 'Qui potrai gestire le gare del plugin Racemate.', $this->text_domain );*/ ?></p>
 
       <?php if (!empty($entries)) : ?>
-        <div class="filters-bar d-none">
-          <div class="form-floating">
-            <select class="form-select" id="race_id_filter">
-              <option value="1" selected>Vertical Montemezzo</option>
-            </select>
-            <label for="race_id_filter">Gara</label>
+        <div class="entries-bar">
+          <div class="filters-bar">
+            <div class="form-floating">
+              <select class="form-select" id="race_id_filter" disabled>
+                <option value="1">Vertical Montemezzo</option>
+                <option value="2" selected>Bivacco Rovedatti Vertical</option>
+              </select>
+              <label for="race_id_filter">Gara</label>
+            </div>
+            <div class="form-floating">
+              <select class="form-select" id="payment_status_filter" disabled>
+                <option value="" selected>Tutti</option>
+                <option value="pending">In attesa</option>
+                <option value="paid">Pagato</option>
+              </select>
+              <label for="payment_status_filter">Esito pagamento</label>
+            </div>
+            <div class="form-floating d-none">
+              <input type="text" class="form-control" id="last_name_filter">
+              <label for="last_name_filter">Cognome</label>
+            </div>
           </div>
-          <div class="form-floating">
-            <select class="form-select" id="payment_status_filter">
-              <option value="" selected>Tutti</option>
-              <option value="pending">In attesa</option>
-              <option value="paid">Pagato</option>
-            </select>
-            <label for="payment_status_filter">Esito pagamento</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" id="last_name_filter">
-            <label for="last_name_filter">Cognome</label>
+          <div class="actions-bar">
+            <a href="<?php echo admin_url('admin-post.php'); ?>?action=export&race_id=2" class="btn btn-secondary" style="display: flex; align-items: center;">
+              <span class="dashicons dashicons-download"></span>
+            </a>
           </div>
         </div>
         <table class="table table-light table-striped">
@@ -200,5 +211,61 @@ class RmiapAdminEntries {
       error_log('(ajax_rmiap_entry_delete): ' . $e->getMessage);
       wp_send_json_error(array('message' => __('Errore in delete')), 500);
     }
+  }
+
+  public function export() {
+      /*header("Content-type: application/force-download");
+      header("Content-disposition: csv" . date("Y-m-d") . "csv");
+      header( "Content-disposition: filename=".$filename);
+      header('Content-Description: File Transfer');
+
+      echo $filename;
+      exit;*/
+
+    $entries = $this->db->get_entries_view();
+
+    $delimiter = ";";
+    $columns = array('id', 'first_name', 'last_name', 'birth_year', 'gender', 'club', 'tin', 'email', 'phone_number', 'payment_method', 'payment_status');
+    $filename = strtolower(preg_replace('/\s+/', '', $entries['0']->race_name)) . ".csv";
+
+    
+    
+    
+    header( 'Content-Type: application/csv' );
+    header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
+
+    // clean output buffer
+    ob_end_clean();
+    
+    $handle = fopen( 'php://output', 'w' );
+
+    // use keys as column titles
+    //fputcsv( $handle, array_keys( (array)$entries['0'] ), ";");
+    fputcsv( $handle, $columns, $delimiter);
+
+    foreach ($entries as $value) {
+      fputcsv($handle, array_intersect_key((array)$value, array_flip($columns)), $delimiter);
+    }
+
+    fclose( $handle );
+
+    // flush buffer
+    //ob_flush();
+    
+    // use exit to get rid of unexpected output afterward
+    exit();
+    //header("Content-type: text/x-csv");
+    //header("Content-type: text/csv");
+    //header("Content-type: application/csv");
+    //header("Content-Disposition: attachment; filename=search_results.csv");
+    //echo $out;
+    //exit;
+
+    
+    //header("Content-Type: text/csv; charset=UTF-16LE");
+    //header("Content-Disposition: attachment;filename=$filename");
+    //echo file_get_contents($filename);
+    //readfile($filename);
+    //exit();
   }
 }

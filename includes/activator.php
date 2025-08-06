@@ -137,13 +137,17 @@ CREATE TABLE IF NOT EXISTS events_products (
     WHERE payment_status = 'paid' OR (payment_method IN ('cash', 'sepa') AND payment_status = 'pending')
     ORDER BY race_id, last_name, first_name;";
 
-    $sql3 = "TRUNCATE {$prefix}_entries;";
-    $sql4="ALTER TABLE {$prefix}_entries AUTO_INCREMENT=995;";
+    //$sql3 = "DELETE FROM {$prefix}_entries WHERE tin = 'GDLMTT88R21F712C';";
+    //$sql4 = "DELETE FROM {$prefix}_entries WHERE tin = 'TDLLRZ98L47C623P';";
+
+    $sql3 = "UPDATE {$prefix}_entries SET payment_status = 'pending' WHERE tin = 'GDLMTT88R21F712C';";
+    //$sql4="ALTER TABLE {$prefix}_entries AUTO_INCREMENT=995;";
     //dbDelta($sqlAccounts);
     //dbDelta($sqlRaces);
     //dbDelta($sqlEntries);
     try {
-      //$wpdb->query($sql3);
+      $wpdb->query($sql3);
+      $wpdb->query($sql4);
       //$wpdb->query($sql4);
     } catch (Exception $e) {
       error_log($e->getMessage());

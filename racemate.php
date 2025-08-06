@@ -4,7 +4,7 @@
  * Plugin Name:       Racemate
  * Plugin URI:        https://github.com/matteogadola/wp-racemate
  * Description:       Add Stripe payment and opinionated subscription forms to your WordPress site in minutes.
- * Version:           0.8.0
+ * Version:           0.9.1
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Matteo Gadola

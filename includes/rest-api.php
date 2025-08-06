@@ -60,13 +60,13 @@ class RmiapRestApi {
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => array($this, 'mail_callback'),
         'permission_callback' => array($this, 'mail_permissions_check'),
-        'args'                => array(
+        /*'args'                => array(
           'CustomID' => array(
             'validate_callback' => function( $param, $request, $key ) {
               return is_numeric($param) && absint($param) > 0;
             }
           ),
-        ),
+        ),*/
       )
     );
   }
